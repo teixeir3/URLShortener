@@ -1,54 +1,38 @@
 class ShortenedUrl < ActiveRecord::Base
-  # this says to make each of these fields attr_accessible;
-  # `attr_accessible` is just a class method, and I can call it like
-  # normal inside a block passed to an `each`.
-  #
-  # I like to do this because the list of attr_accessible attributes
-  # is often very long; I think it reads better as an array.
-  [ :long_url,
+  attr_accessible(
+    :long_url,
     :short_url,
-    :submitter_id ]. each { |field| attr_accessible field }
+    :submitter_url
+  )
 
   validates :long_url, :presence => true, :uniqueness => true
   validates :short_url, :presence => true, :uniqueness => true
   validates :submitter_id, :presence => true
 
-
-  # My `shortened_urls` table has a column `submitter_id` which is a
-  # foreign key into the `users` table. Because this doesn't follow
-  # the rails convention, I need to specify the foreign key
-  # column. The related table and the type of objects it contains is
-  # inferred from `:class_name => "User"`.
-  #
-  # `submitter` is just the name of the association; because I specified
-  # `class_name` and `foreign_key`, there's nothing left for Rails to
-  # infer from `submitter`, so I could have chosen any name for this.
-  belongs_to :submitter, :class_name => "User", :foreign_key => "submitter_id"
+  belongs_to(
+    :submitter,
+    :class_name => "User",
+    :foreign_key => "submitter_id"
+  )
 
   has_many :visits
-  # Note that `visits` is the name of the association *through which*
-  # we can find the visitors. For each `Visit`, Rails will look up the
-  # associated `visitor`.
-  has_many :visitors, :through => :visits
+  # `:unique => true` means a `User` will be returned only once no
+  # matter how many times they click.
+  has_many :visitors, :through => :visits, :unique => true
 
-  def self.generate(user, long_url)
-    ShortenedUrl.create(
+  def self.create_for_user_and_long_url!(user, long_url)
+    ShortenedUrl.create!(
       :submitter_id => user.id,
       :long_url => long_url,
-      :short_url => ShortenedUrl.shorten(long_url))
+      :short_url => ShortenedUrl.random_code
+    )
   end
 
-  def self.shorten(long_url)
+  def self.random_code(long_url)
     while true do
-      # this generates a random 8 digit link like: "BfIaBtVl58A". It
-      # will be careful not to use characters invalid in a URL.
-      short_url = SecureRandom.urlsafe_base64(8)
-      # must not reuse a short_url, though this is vanishingly
-      # unlikely anyway.
-      break unless ShortenedUrl.where(:short_url => short_url).exists?
+      random_code = SecureRandom.urlsafe_base64(16)
+      return random_code if !ShortenedUrl.where(:short_url => short_url).exists?
     end
-
-    short_url
   end
 
   def num_clicks
@@ -56,8 +40,6 @@ class ShortenedUrl < ActiveRecord::Base
   end
 
   def num_uniques
-    # `pluck` returns an array of the column's values, instead of an
-    # array of model objects.
     visits.count(:user_id, :distinct => true)
   end
 
