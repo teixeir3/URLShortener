@@ -1,3 +1,6 @@
 # URL Shortener
 
-Check out the [`app/models`](./app/models) directory to find the fun!
+Check out:
+
+* [`db/migrate](./db/migrate)
+* [`app/models`](./app/models)
