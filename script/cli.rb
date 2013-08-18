@@ -2,7 +2,7 @@ class CLI
   def create_url
     puts "Type in your long url"
     long_url = gets.chomp
-    shortend_url = ShortenedUrl.create_for_user_and_long_url!(
+    shortened_url = ShortenedUrl.create_for_user_and_long_url!(
       @current_user,
       long_url
     )
@@ -39,9 +39,11 @@ class CLI
 
   def visit_url
     puts "Type in the shortened URL"
-    long_url = gets.chomp
+    short_url = gets.chomp
 
-    shortened_url = ShortenedUrl.find_by_long_url(long_url)
+    shortened_url = ShortenedUrl.find_by_short_url(short_url)
+
+    raise "no such url found!" if shortened_url.nil?
 
     Visit.record_visit!(@current_user, shortened_url)
     Launchy.open(shortened_url.long_url)

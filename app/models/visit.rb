@@ -1,5 +1,5 @@
 class Visit < ActiveRecord::Base
-  attr_accessible :shortened_url, :user_id
+  attr_accessible :shortened_url_id, :user_id
 
   validates :user_id, :presence => true
   validates :shortened_url_id, :presence => true

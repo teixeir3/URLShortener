@@ -2,10 +2,10 @@ class ShortenedUrl < ActiveRecord::Base
   attr_accessible(
     :long_url,
     :short_url,
-    :submitter_url
+    :submitter_id
   )
 
-  validates :long_url, :presence => true, :uniqueness => true
+  validates :long_url, :presence => true
   validates :short_url, :presence => true, :uniqueness => true
   validates :submitter_id, :presence => true
 
@@ -16,9 +16,7 @@ class ShortenedUrl < ActiveRecord::Base
   )
 
   has_many :visits
-  # `:unique => true` means a `User` will be returned only once no
-  # matter how many times they click.
-  has_many :visitors, :through => :visits, :unique => true
+  has_many :visitors, :through => :visits, :uniq => true
 
   def self.create_for_user_and_long_url!(user, long_url)
     ShortenedUrl.create!(
@@ -28,10 +26,10 @@ class ShortenedUrl < ActiveRecord::Base
     )
   end
 
-  def self.random_code(long_url)
+  def self.random_code
     while true do
       random_code = SecureRandom.urlsafe_base64(16)
-      return random_code if !ShortenedUrl.where(:short_url => short_url).exists?
+      return random_code if !ShortenedUrl.where(:short_url => random_code).exists?
     end
   end
 

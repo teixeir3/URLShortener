@@ -9,4 +9,5 @@ group :assets do
 end
 
 gem 'jquery-rails'
+gem 'launchy'
 gem 'sqlite3'
