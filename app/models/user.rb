@@ -1,6 +1,4 @@
 class User < ActiveRecord::Base
-  attr_accessible :email
-
   validates :email, :uniqueness => true, :presence => true
 
   has_many(
@@ -17,3 +15,4 @@ class User < ActiveRecord::Base
     :source => :shortened_url
   )
 end
+

@@ -1,10 +1,4 @@
 class ShortenedUrl < ActiveRecord::Base
-  attr_accessible(
-    :long_url,
-    :short_url,
-    :submitter_id
-  )
-
   validates :long_url, :presence => true
   validates :short_url, :presence => true, :uniqueness => true
   validates :submitter_id, :presence => true
@@ -47,3 +41,4 @@ class ShortenedUrl < ActiveRecord::Base
     visits.where(:created_at => range).count(:user_id, :distinct => true)
   end
 end
+

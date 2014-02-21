@@ -51,3 +51,4 @@ class CLI
 end
 
 CLI.new.run
+
