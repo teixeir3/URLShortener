@@ -33,8 +33,8 @@ ActiveRecord::Schema.define(version: 20130124213836) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true
 
   create_table "visits", force: true do |t|
-    t.integer  "user_id"
-    t.integer  "shortened_url_id"
+    t.integer  "user_id",          null: false
+    t.integer  "shortened_url_id", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -1,19 +1,27 @@
 class ShortenedUrl < ActiveRecord::Base
-  validates :long_url, :short_url, :submitter, presence: true
+  validates :long_url, :short_url, :submitter_id, presence: true
   validates :short_url, uniqueness: true
 
   belongs_to(
     :submitter,
     class_name: 'User',
-    foreign_key: :submitter_id
+    foreign_key: :submitter_id,
+    primary_key: :id
   )
 
-  has_many :visits, inverse_of: :shortened_url
-  has_many :visitors, -> { distinct }, through: :visits
+  has_many :visits
+  # TA: Again, the association would return the same user multiple times. You
+  # may uncomment the lambda below to eliminate duplicates in the result set.
+  has_many(
+    :visitors,
+    # -> { distinct },
+    through: :visits,
+    source: :visitor
+  )
 
   def self.create_for_user_and_long_url!(user, long_url)
     ShortenedUrl.create!(
-      submitter: user,
+      submitter_id: user.id,
       long_url: long_url,
       short_url: ShortenedUrl.random_code
     )
@@ -31,12 +39,16 @@ class ShortenedUrl < ActiveRecord::Base
   end
 
   def num_uniques
-    visitors.count
+    # TA: You can just write `visitors.count` if you're using the lambda above.
+    # visitors.count
+    # TA: Alternatively, if you `#visitors` returns duplicates, you can count
+    # the unique values like so:
+    visits.select("user_id").distinct.count
   end
 
   def num_recent_uniques
     now = Time.now
     range = ((now - 10.minutes)..now)
-    visits.select('DISTINCT user_id').where(created_at: range).count
+    visits.select('user_id').where(created_at: range).distinct.count
   end
 end

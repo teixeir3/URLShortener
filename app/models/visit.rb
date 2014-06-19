@@ -1,15 +1,15 @@
 class Visit < ActiveRecord::Base
-  validates :visitor, :shortened_url, presence: true
+  validates :user_id, :shortened_url_id, presence: true
 
   belongs_to :shortened_url, inverse_of: :visits
   belongs_to(
     :visitor,
-    primary_key: :id,
+    class_name: 'User',
     foreign_key: :user_id,
-    class_name: 'User'
+    primary_key: :id
   )
 
   def self.record_visit!(user, shortened_url)
-    Visit.create!(visitor: user, shortened_url: shortened_url)
+    Visit.create!(user_id: user.id, shortened_url_id: shortened_url.id)
   end
 end
