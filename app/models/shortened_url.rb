@@ -47,8 +47,10 @@ class ShortenedUrl < ActiveRecord::Base
   end
 
   def num_recent_uniques
-    now = Time.now
-    range = ((now - 10.minutes)..now)
-    visits.select('user_id').where(created_at: range).distinct.count
+    visits
+      .select('user_id')
+      .where("created_at > ?", 10.minutes.ago)
+      .distinct
+      .count
   end
 end
