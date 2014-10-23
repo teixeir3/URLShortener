@@ -44,7 +44,3 @@ end
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 gem 'launchy'
-
-group :development, :test do
-  gem 'rspec-rails'
-end
