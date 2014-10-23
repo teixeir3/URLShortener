@@ -2,5 +2,5 @@
 
 Check out:
 
-* [`db/migrate](./db/migrate)
+* [`db/migrate`](./db/migrate)
 * [`app/models`](./app/models)
