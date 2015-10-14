@@ -41,7 +41,7 @@ class ShortenedUrl < ActiveRecord::Base
   def num_uniques
     # TA: You can just write `visitors.count` if you're using the lambda above.
     # visitors.count
-    # TA: Alternatively, if you `#visitors` returns duplicates, you can count
+    # TA: Alternatively, if your `#visitors` returns duplicates, you can count
     # the unique values like so:
     visits.select("user_id").distinct.count
   end
